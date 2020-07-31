@@ -1,6 +1,6 @@
 import React from "react";
-import { Rate } from "antd";
-import "./card.css";
+import {Rate} from "antd";
+import "../css/card.css";
 
 const Card = (props) => {
   return (
@@ -8,7 +8,7 @@ const Card = (props) => {
       <div className="card-cover_frame">
         <img
           className="card-cover"
-          alt="image"
+          alt="product-item"
           src={props.cover ? props.cover : "/doraemon.jpg"}
         />
       </div>

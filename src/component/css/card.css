@@ -1,10 +1,29 @@
+.card-border,
+.avatar-item {
+  width: 200px;
+
+  margin: 15px;
+}
+
 .card-border {
+  background-color: white;
+  text-align: left;
+}
+
+.card-border,
+.avatar-border {
   min-width: 170px;
   max-width: 250px;
-  width: 200px;
-  display: flex;
   flex-direction: column;
-  text-align: left;
+}
+
+.avatar-border {
+  border-radius: 100px;
+}
+
+.border,
+.card-border,
+.avatar-border {
   border: 1px solid #dedede;
 }
 
@@ -14,9 +33,11 @@
 
 .hoverable:hover {
   -webkit-box-shadow: 0 1px 2px -2px rgba(0, 0, 0, 0.16),
-    0 3px 6px 0 rgba(0, 0, 0, 0.12), 0 5px 12px 4px rgba(0, 0, 0, 0.09);
+  0 3px 6px 0 rgba(0, 0, 0, 0.12), 0 5px 12px 4px rgba(0, 0, 0, 0.09);
   box-shadow: 0 1px 2px -2px rgba(0, 0, 0, 0.16),
-    0 3px 6px 0 rgba(0, 0, 0, 0.12), 0 5px 12px 4px rgba(0, 0, 0, 0.09);
+  0 3px 6px 0 rgba(0, 0, 0, 0.12), 0 5px 12px 4px rgba(0, 0, 0, 0.09);
+  margin-top: 10px;
+  margin-bottom: 20px;
 }
 
 .elastic {
@@ -38,7 +59,12 @@
 .card-border_content {
   padding: 5px;
 }
+
 .card-title {
   /* font-weight: bold; */
   font-size: 18px;
+}
+
+.self-center {
+  align-self: center;
 }

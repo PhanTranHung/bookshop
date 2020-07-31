@@ -1,19 +1,25 @@
-import React, { useState, useEffect } from "react";
-import { Checkbox } from "antd";
-import "./checkbox-group.css";
+import React, {useState, useEffect} from "react";
+import {Checkbox} from "antd";
+import "../css/checkbox-group.css";
+import {useMounted} from "../../helper/useMounted";
+
 
 function CheckboxGroup({
-  options = [],
-  drawBack = 0,
-  itemLayout,
-  onChange,
-  ...props
-}) {
+                         options = [],
+                         drawBack = 0,
+                         itemLayout,
+                         selectedCheckBox = [],
+                         onChange,
+                         ...props
+                       }) {
   // console.log("CHANGE");
-  const [selected, setSelected] = useState([]);
+  const [selected, setSelected] = useState(selectedCheckBox);
+  debugger;
+  const isMounted = useMounted();
 
   useEffect(() => {
-    onChange(selected);
+    debugger;
+    if (onChange && isMounted) onChange(selected);
     // eslint-disable-next-line
   }, [selected]);
   const handle = (e) => {
@@ -31,7 +37,7 @@ function CheckboxGroup({
           style={{ paddingLeft: `${drawBack}px` }}
         >
           <Checkbox
-            checked={selected.indexOf(item.value) >= 0}
+            checked={selected.length > 0 && selected.indexOf(item.value) >= 0}
             name={item.value}
             value={item.value}
             onChange={(e) => handle(e)}
