@@ -123,6 +123,10 @@ export const getAuthor = (prams) => {
                   authors: allAuthors {
                     label: name
                     value: id
+                    id
+                    name
+                    penname
+                    cover
                   }
                 }`,
         variables: {},
@@ -132,3 +136,4 @@ export const getAuthor = (prams) => {
       .catch((error) => reject(error));
   });
 };
+export const getFamousAuthor = getAuthor;

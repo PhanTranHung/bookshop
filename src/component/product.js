@@ -42,7 +42,7 @@ const Product = (props) => {
             </span>
         ))}
       </div>
-      <Divider></Divider>
+      <Divider/>
 
       <div className="scale-item">
         {books &&

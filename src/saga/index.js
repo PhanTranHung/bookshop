@@ -1,6 +1,12 @@
 import * as actions from "../actions";
 
-import {findBookByKeyword, getAuthor, getBook, getCategory} from "../api";
+import {
+  findBookByKeyword,
+  getAuthor,
+  getBook,
+  getCategory,
+  getFamousAuthor,
+} from "../api";
 
 import {all, call, fork, put, takeLatest} from "redux-saga/effects";
 
@@ -13,7 +19,10 @@ function* fetchBook(action) {
       result.books = yield call(loadBook, action);
     else if (action.type === actions.FIND_BOOK_BY_OPTIONS)
       result.books = yield call(findByOptions, action);
-    else result = yield call(findByKeyword, action);
+    else if (action.type === actions.FIND_BOOK_BY_KEYWORD)
+      result = yield call(findByKeyword, action);
+    else if (action.type === actions.GET_AUTHOR)
+      result.authors = yield call(fetchAuthor, action);
 
     yield put(actions.getBookSucceeded(result));
   } catch (e) {
@@ -34,7 +43,6 @@ function* findByKeyword(action) {
 }
 
 function* loadBook() {
-  debugger;
   yield put(actions.bookGetting());
   return yield call(getBook);
 }
@@ -45,6 +53,7 @@ function* watchFetchBook() {
       actions.GET_BOOK,
       actions.FIND_BOOK_BY_OPTIONS,
       actions.FIND_BOOK_BY_KEYWORD,
+      actions.GET_AUTHOR,
     ],
     fetchBook
   );
@@ -62,8 +71,13 @@ function* fetchCategory(action) {
 
 function* fetchAuthor(action) {
   yield put(actions.authorGetting());
+  return yield call(getAuthor);
+}
+
+function* fetchFamousAuthor(action) {
+  yield put(actions.authorGetting());
   try {
-    const authors = yield call(getAuthor);
+    const authors = yield call(getFamousAuthor);
     yield put(actions.getAuthorSucceeded(authors));
   } catch (e) {
     yield put(actions.getAuthorFailed(e));
@@ -72,7 +86,7 @@ function* fetchAuthor(action) {
 
 function* watchFetchMenuData() {
   yield takeLatest(actions.GET_CATEGORY, fetchCategory);
-  yield takeLatest(actions.GET_AUTHOR, fetchAuthor);
+  yield takeLatest(actions.GET_FAMOUS_AUTHOR, fetchFamousAuthor);
 }
 
 export default function* rootSaga() {
