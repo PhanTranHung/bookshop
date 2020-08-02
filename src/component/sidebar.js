@@ -23,7 +23,7 @@ const {SubMenu} = Menu;
 const SideBar = () => {
   const {categories, authors} = useSelector((state) => ({
     categories: state.fetchCategory.categories,
-    authors: state.fetchAuthor.authors,
+    authors: state.fetchAuthor.author,
   }));
 
   const dispatch = useDispatch();

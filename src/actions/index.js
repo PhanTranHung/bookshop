@@ -1,4 +1,5 @@
 export const GET_BOOK = "GET_BOOK";
+export const GET_BOOK_DETAIL = "GET_BOOK_DETAIL";
 export const FIND_BOOK_BY_OPTIONS = "FIND_BOOK_BY_OPTIONS";
 export const FIND_BOOK_BY_KEYWORD = "FIND_BOOK_BY_KEYWORD";
 export const WAITING_FOR_USER_DONE = "WAITING_FOR_USER_DONE";
@@ -9,11 +10,12 @@ export const GET_BOOK_FAILED = "GET_BOOK_FAILED";
 export const initBook = {
   constructing: true,
   isLoading: true,
-  books: [],
-  authors: [],
+  book: [],
+  author: [],
 };
 
 export const getBook = () => ({type: GET_BOOK});
+export const getBookDetail = (alias) => ({type: GET_BOOK_DETAIL, alias});
 export const findBookByOptions = (authorID, categoryID) => ({
   type: FIND_BOOK_BY_OPTIONS,
   authorID,
@@ -25,10 +27,10 @@ export const findBookByKeyword = (keyword) => ({
 });
 export const waitingForUserDone = () => ({type: WAITING_FOR_USER_DONE});
 export const bookGetting = () => ({type: BOOK_GETTING});
-export const getBookSucceeded = ({books, authors}) => ({
+export const getBookSucceeded = ({book, author}) => ({
   type: GET_BOOK_SUCCEEDED,
-  books,
-  authors,
+  book,
+  author,
 });
 export const getBookFailed = (message) => ({type: GET_BOOK_FAILED, message});
 
@@ -55,17 +57,28 @@ export const GET_FAMOUS_AUTHOR = "GET_FAMOUS_AUTHOR";
 export const AUTHOR_GETTING = "AUTHOR_GETTING";
 export const GET_AUTHOR_SUCCEEDED = "GET_AUTHOR_SUCCEEDED";
 export const GET_AUTHOR_FAILED = "GET_AUTHOR_FAILED";
+export const GET_AUTHOR_DETAIL = "GET_AUTHOR_DETAIL";
 
-export const initAuthor = {isLoading: true, authors: []};
+export const initAuthor = {isLoading: true, author: []};
 
 export const getAuthor = (params) => ({type: GET_AUTHOR, params});
-export const getFamousAuthor = (params) => ({type: GET_FAMOUS_AUTHOR, params})
+export const getFamousAuthor = (params) => ({
+  type: GET_FAMOUS_AUTHOR,
+  params,
+});
 export const authorGetting = () => ({type: AUTHOR_GETTING});
-export const getAuthorSucceeded = (authors) => ({
+export const getAuthorSucceeded = (author) => ({
   type: GET_AUTHOR_SUCCEEDED,
-  authors,
+  author,
 });
 export const getAuthorFailed = (message) => ({
   type: GET_AUTHOR_FAILED,
   message,
 });
+export const getAuthorDetail = (alias) => ({
+  type: GET_AUTHOR_DETAIL,
+  alias,
+});
+
+export const CLEAR_DATA = "CLEAR_DATA";
+export const clearData = () => ({type: CLEAR_DATA});

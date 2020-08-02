@@ -11,7 +11,7 @@ export const getBook = (authorID = [], categoryID = []) => {
       data: {
         operationName: "FindBook",
         query: `query FindBook($authorsID: [ID], $categoriesID: [ID]) {
-                  books: allBooks(
+                  book: allBooks(
                     where: {
                       AND: {
                         author_some: { id_in: $authorsID }
@@ -42,7 +42,7 @@ export const getBook = (authorID = [], categoryID = []) => {
         },
       },
     })
-      .then((res) => resolve(res.data.data.books))
+      .then((res) => resolve(res.data.data.book))
       .catch((error) => reject(error));
   });
 };
@@ -55,7 +55,7 @@ export const findBookByKeyword = (keyword) => {
       data: {
         operationName: "findBookByKeyword",
         query: `query findBookByKeyword($keyword: String) {
-                  books: allBooks(where: { name_contains: $keyword }) {
+                  book: allBooks(where: { name_contains: $keyword }) {
                     title: name
                     id
                     rate
@@ -72,7 +72,7 @@ export const findBookByKeyword = (keyword) => {
                     }
                     cover: image
                   }
-                  authors: allAuthors(
+                  author: allAuthors(
                     where: { OR: { name_contains: $keyword, penname_contains: $keyword } }
                     first: 4
                   ) {
@@ -120,7 +120,7 @@ export const getAuthor = (prams) => {
       data: {
         operationName: "GetAuthors",
         query: `query GetAuthors {
-                  authors: allAuthors {
+                  author: allAuthors {
                     label: name
                     value: id
                     id
@@ -132,8 +132,73 @@ export const getAuthor = (prams) => {
         variables: {},
       },
     })
-      .then((res) => resolve(res.data.data.authors))
+      .then((res) => resolve(res.data.data.author))
       .catch((error) => reject(error));
   });
 };
 export const getFamousAuthor = getAuthor;
+
+export const getAuthorDetail = (alias) => {
+  return new Promise((resolve, reject) => {
+    axios({
+      method: "POST",
+      url: "graphql/api",
+      data: {
+        operationName: "GetAuthorDetail",
+        query: `query GetAuthorDetail($alias: ID!) {
+                  author: Author(where:  {id: $alias}) {
+                    alias: id
+                    id
+                    name
+                    penname
+                    cover
+                    biography
+                  }
+                }`,
+        variables: {
+          "alias": alias
+        },
+      },
+    })
+      .then((res) => resolve(res.data.data.author))
+      .catch((error) => reject(error));
+  });
+};
+
+export const getBookDetail = (alias) => {
+  return new Promise((resolve, reject) => {
+    axios({
+      method: "POST",
+      url: "graphql/api",
+      data: {
+        operationName: "BookDetail",
+        query: `query BookDetail($alias: ID!) {
+                  book: Book(where: { id: $alias }) {
+                    id
+                    name
+                    author {
+                      alias:id
+                      name
+                      penname
+                    }
+                    rate
+                    price
+                    category {
+                      name
+                      alias
+                      id
+                    }
+                    image
+                    number_in_storage
+                    describe
+                  }
+                }`,
+        variables: {
+          "alias": alias
+        },
+      },
+    })
+      .then((res) => resolve(res.data.data))
+      .catch((error) => reject(error));
+  });
+};

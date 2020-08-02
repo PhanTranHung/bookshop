@@ -1,14 +1,16 @@
 import React, {useEffect} from "react";
 import "./css/product.css";
-import Card from "./data-entry/card";
 import {useDispatch, useSelector} from "react-redux";
 import {getBook} from "../actions";
-import {Avatar, Divider, Empty, Result, Button} from "antd";
-import {UserOutlined, Loading3QuartersOutlined} from "@ant-design/icons";
+import {Divider, Empty, Result, Button} from "antd";
+import {Loading3QuartersOutlined} from "@ant-design/icons";
+import ListAuthor from "./list-author";
+import ListBook from "./list-book";
 
 const Product = (props) => {
-  const {authors, books, ...state} = useSelector((state) => state.fetchBook);
+  const {author: authors, book: books, ...state} = useSelector((state) => state.fetchBook);
   const dispatch = useDispatch();
+
   useEffect(() => {
     dispatch(getBook());
     // eslint-disable-next-line
@@ -29,38 +31,10 @@ const Product = (props) => {
   return (
     <div className="">
       <div className="scale-item">
-        {authors &&
-        authors.map((author) => (
-          <span key={author.id} className="avatar-item">
-              <Avatar
-                src={author.cover}
-                className="avatar-border self-center"
-                size={170}
-                icon={<UserOutlined/>}
-              />
-              <div>{author.name}</div>
-            </span>
-        ))}
+        {authors && <ListAuthor authors={authors}/>}
       </div>
       <Divider/>
-
-      <div className="scale-item">
-        {books &&
-        books.map((book) => (
-          <Card
-            key={book.id}
-            cover={book.cover}
-            rate={book.rate}
-            title={book.title}
-            desc={
-              <div className="start-from-right stronger">
-                Giá: {book.price}
-              </div>
-            }
-            hoverable
-          />
-        ))}
-      </div>
+      <div className="scale-item">{books && <ListBook books={books}/>}</div>
     </div>
   );
 };

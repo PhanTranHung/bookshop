@@ -1,11 +1,13 @@
 import * as actions from "../actions";
 
 import {
-  findBookByKeyword,
-  getAuthor,
   getBook,
+  getAuthor,
   getCategory,
+  getBookDetail,
+  getAuthorDetail,
   getFamousAuthor,
+  findBookByKeyword,
 } from "../api";
 
 import {all, call, fork, put, takeLatest} from "redux-saga/effects";
@@ -16,13 +18,13 @@ function* fetchBook(action) {
   let result = {};
   try {
     if (action.type === actions.GET_BOOK)
-      result.books = yield call(loadBook, action);
+      result.book = yield call(loadBook, action);
     else if (action.type === actions.FIND_BOOK_BY_OPTIONS)
-      result.books = yield call(findByOptions, action);
+      result.book = yield call(findByOptions, action);
     else if (action.type === actions.FIND_BOOK_BY_KEYWORD)
       result = yield call(findByKeyword, action);
     else if (action.type === actions.GET_AUTHOR)
-      result.authors = yield call(fetchAuthor, action);
+      result.author = yield call(fetchAuthor, action);
 
     yield put(actions.getBookSucceeded(result));
   } catch (e) {
@@ -59,7 +61,7 @@ function* watchFetchBook() {
   );
 }
 
-function* fetchCategory(action) {
+function* fetchCategory() {
   yield put(actions.categoriesGetting());
   try {
     const categories = yield call(getCategory);
@@ -69,16 +71,41 @@ function* fetchCategory(action) {
   }
 }
 
-function* fetchAuthor(action) {
+function* fetchAuthor() {
   yield put(actions.authorGetting());
   return yield call(getAuthor);
 }
 
-function* fetchFamousAuthor(action) {
+function* fetchAuthorDetail(action) {
   yield put(actions.authorGetting());
   try {
-    const authors = yield call(getFamousAuthor);
-    yield put(actions.getAuthorSucceeded(authors));
+    const author = yield call(getAuthorDetail, action.alias);
+    yield put(actions.getAuthorSucceeded(author));
+  } catch (e) {
+    yield put(actions.getAuthorFailed(e));
+  }
+}
+
+function* fetchBookDetail(action) {
+  yield put(actions.bookGetting());
+  try {
+    const book = yield call(getBookDetail, action.alias);
+    yield put(actions.getBookSucceeded(book));
+  } catch (e) {
+    yield put(actions.getBookFailed(e));
+  }
+}
+
+function* watchFetchDetailInfo() {
+  yield takeLatest(actions.GET_BOOK_DETAIL, fetchBookDetail);
+  yield takeLatest(actions.GET_AUTHOR_DETAIL, fetchAuthorDetail);
+}
+
+function* fetchFamousAuthor() {
+  yield put(actions.authorGetting());
+  try {
+    const author = yield call(getFamousAuthor);
+    yield put(actions.getAuthorSucceeded(author));
   } catch (e) {
     yield put(actions.getAuthorFailed(e));
   }
@@ -90,5 +117,9 @@ function* watchFetchMenuData() {
 }
 
 export default function* rootSaga() {
-  yield all([fork(watchFetchBook), fork(watchFetchMenuData)]);
+  yield all([
+    fork(watchFetchBook),
+    fork(watchFetchMenuData),
+    fork(watchFetchDetailInfo),
+  ]);
 }

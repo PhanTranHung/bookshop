@@ -13,6 +13,7 @@ import {
   AUTHOR_GETTING,
   GET_AUTHOR_FAILED,
   GET_AUTHOR_SUCCEEDED,
+  CLEAR_DATA,
 } from "../actions";
 
 export const gettingAction = (prevState, action) => ({
@@ -29,6 +30,8 @@ export const failedAction = (prevState, action) => ({
 
 export const fetchBook = (state = initBook, action) => {
   switch (action.type) {
+    // case CLEAR_DATA:
+    //   return initBook;
     case BOOK_GETTING:
       return gettingAction(state, action);
     case WAITING_FOR_USER_DONE:
@@ -36,12 +39,13 @@ export const fetchBook = (state = initBook, action) => {
     case GET_BOOK_SUCCEEDED:
       return {
         ...state,
-        books: action.books || [],
-        authors: action.authors || [],
+        book: action.book || [],
+        author: action.author || [],
         isLoading: false,
         error: false,
         constructing: undefined,
       };
+
     case GET_BOOK_FAILED:
       return failedAction(state, action);
     default:
@@ -76,7 +80,7 @@ export const fetchAuthor = (state = initAuthor, action) => {
         ...state,
         isLoading: false,
         error: false,
-        authors: action.authors,
+        author: action.author,
       };
     case GET_AUTHOR_FAILED:
       return failedAction(state, action);
@@ -97,4 +101,7 @@ export const reducer = combineReducers({
   fetchAuthor,
 });
 
-export default (state = initState, action) => reducer(state, action);
+export default (state = initState, action) => {
+  if (action.type === CLEAR_DATA) state = initState;
+  return reducer(state, action);
+};
