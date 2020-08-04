@@ -1,20 +1,5 @@
-import { combineReducers } from "redux";
-import {
-  initBook,
-  BOOK_GETTING,
-  GET_BOOK_FAILED,
-  GET_BOOK_SUCCEEDED,
-  WAITING_FOR_USER_DONE,
-  initCategory,
-  CATEGORY_GETTING,
-  GET_CATEGORY_FAILED,
-  GET_CATEGORY_SUCCEEDED,
-  initAuthor,
-  AUTHOR_GETTING,
-  GET_AUTHOR_FAILED,
-  GET_AUTHOR_SUCCEEDED,
-  CLEAR_DATA,
-} from "../actions";
+import {combineReducers} from "redux";
+import * as actions from "../actions";
 
 export const gettingAction = (prevState, action) => ({
   ...prevState,
@@ -27,15 +12,15 @@ export const failedAction = (prevState, action) => ({
   message: action.message,
 });
 
-export const fetchBook = (state = initBook, action) => {
+export const fetchBook = (state = actions.initBook, action) => {
   switch (action.type) {
-    case CLEAR_DATA:
+    case actions.CLEAR_DATA:
       return action.initData;
-    case BOOK_GETTING:
+    case actions.BOOK_GETTING:
       return gettingAction(state, action);
-    case WAITING_FOR_USER_DONE:
+    case actions.WAITING_FOR_USER_DONE:
       return state;
-    case GET_BOOK_SUCCEEDED:
+    case actions.GET_BOOK_SUCCEEDED:
       return {
         ...state,
         book: action.book || [],
@@ -44,59 +29,89 @@ export const fetchBook = (state = initBook, action) => {
         error: false,
       };
 
-    case GET_BOOK_FAILED:
+    case actions.GET_BOOK_FAILED:
       return failedAction(state, action);
     default:
       return state;
   }
 };
 
-export const fetchCategory = (state = initCategory, action) => {
+export const fetchCategory = (state = actions.initCategory, action) => {
   switch (action.type) {
-    case CATEGORY_GETTING:
+    case actions.CATEGORY_GETTING:
       return gettingAction(state, action);
-    case GET_CATEGORY_SUCCEEDED:
+    case actions.GET_CATEGORY_SUCCEEDED:
       return {
         ...state,
         isLoading: false,
         error: false,
         categories: action.categories,
       };
-    case GET_CATEGORY_FAILED:
+    case actions.GET_CATEGORY_FAILED:
       return failedAction(state, action);
     default:
       return state;
   }
 };
 
-export const fetchAuthor = (state = initAuthor, action) => {
+export const fetchAuthor = (state = actions.initAuthor, action) => {
   switch (action.type) {
-    case AUTHOR_GETTING:
+    case actions.AUTHOR_GETTING:
       return gettingAction(state, action);
-    case GET_AUTHOR_SUCCEEDED:
+    case actions.GET_AUTHOR_SUCCEEDED:
       return {
         ...state,
         isLoading: false,
         error: false,
         author: action.author,
       };
-    case GET_AUTHOR_FAILED:
+    case actions.GET_AUTHOR_FAILED:
       return failedAction(state, action);
     default:
       return state;
   }
 };
 
+export const authentication = (state = actions.initAuthentication, action) => {
+  switch (action.type) {
+    case actions.AUTHENTICATING:
+      return {isAuthenticating: true};
+    case actions.AUTHENTICATE_FAILED:
+      return {authenticateFailed: true, message: action.message};
+    case actions.AUTHENTICATE_SUCCEEDED:
+      return {token: action.token, user: action.user};
+    case actions.LOGGING:
+      return {isAuthenticating: true};
+    case actions.LOGIN_FAILED:
+      return {authenticateFailed: true, message: action.message};
+    case actions.LOGIN_SUCCEEDED:
+      return {token: action.token, user: action.item};
+    case actions.LOGOUT:
+      return {logout: true};
+    case actions.CLEAR_TOKEN_FAILED:
+      return {
+        clearTokenError: true,
+        message: action.message
+      };
+    case actions.CLEAR_TOKEN_SUCCEEDED:
+      return {message: action.message};
+    default:
+      return state;
+  }
+};
+
 export const initState = {
-  fetchBook: initBook,
-  fetchCategory: initCategory,
-  fetchAuthor: initAuthor,
+  fetchBook: actions.initBook,
+  fetchCategory: actions.initCategory,
+  fetchAuthor: actions.initAuthor,
+  authentication: actions.initAuthentication,
 };
 
 export const reducer = combineReducers({
   fetchBook,
   fetchCategory,
   fetchAuthor,
+  authentication,
 });
 
 export default (state = initState, action) => {

@@ -3,6 +3,23 @@ import axios from "axios";
 // console.log(process.env)
 axios.defaults.baseURL = process.env.REACT_APP_SERVER;
 // debugger;
+
+export const jwtKey = "jwt";
+
+export const getToken = () => {
+  return localStorage.getItem(jwtKey);
+};
+
+export const saveToken = (token, remember) => {
+  localStorage.setItem(jwtKey, token);
+  localStorage.setItem("remember", remember);
+};
+
+export const clearToken = ({clearOnServer}) => {
+  localStorage.setItem(jwtKey, undefined);
+  if (clearOnServer) return unauthentication();
+};
+
 export const getBook = (authorID = [], categoryID = []) => {
   return new Promise((resolve, reject) => {
     axios({
@@ -206,6 +223,103 @@ export const getBookDetail = (alias) => {
       // console.log(res);
       if (res.data.errors) return reject(res.data.errors);
       return resolve(res.data.data);
+    });
+  });
+};
+
+export const login = (username, password) => {
+  return new Promise((resolve, reject) => {
+    axios({
+      method: "POST",
+      url: "graphql/api",
+      headers: {
+        Authorization: `Bearer ${getToken()}`,
+      },
+      data: {
+        operationName: "Login",
+        query: `mutation Login($username: String, $password: String) {
+                  login: authenticateUserWithPassword(
+                    username: $username
+                    password: $password
+                  ) {
+                    token
+                    item {
+                      name
+                      id
+                      username
+                      email
+                      permission
+                    }
+                  }
+                }`,
+        variables: {
+          username,
+          password,
+        },
+      },
+    }).then((res) => {
+      // console.log(res);
+      if (res.data.errors) return reject(res.data.errors);
+      return resolve(res.data.data.login);
+    });
+  });
+};
+
+export const authentication = () => {
+  return new Promise((resolve, reject) => {
+    const token = getToken();
+    if (!token) return reject("No token");
+    axios({
+      method: "POST",
+      url: "graphql/api",
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+      data: {
+        operationName: "Authentication",
+        query: `query Authentication{
+                  authentication: authenticatedUser{
+                    id
+                    name
+                    username
+                    email
+                    permission
+                  }
+                }`,
+        variables: {},
+      },
+    }).then((res) => {
+      // console.log(res);
+      if (!res.data.data.authentication) return reject("User null");
+      return resolve(res.data.data.authentication);
+    });
+  });
+};
+
+export const unauthentication = () => {
+  return new Promise((resolve, reject) => {
+    const token = getToken();
+    if (!token) return reject("No token");
+
+    axios({
+      method: "POST",
+      url: "graphql/api",
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+      data: {
+        operationName: "Unauthentication",
+        query: `mutation Unauthentication {
+                  unauthenticate: unauthenticateUser{
+                    success
+                  }
+                }`,
+        variables: {},
+      },
+    }).then((res) => {
+      // console.log(res);
+      if (res.data.errors) return reject(res.data.errors);
+      return resolve(res.data.data.unauthenticate);
     });
   });
 };

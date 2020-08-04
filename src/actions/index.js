@@ -79,3 +79,39 @@ export const getAuthorDetail = (alias) => ({
 
 export const CLEAR_DATA = "CLEAR_DATA";
 export const clearData = (initData) => ({type: CLEAR_DATA, initData});
+
+export const initAuthentication = {isAuthenticating: true};
+export const AUTHENTICATE_USER = "AUTHENTICATE_USER";
+export const AUTHENTICATING = "AUTHENTICATING";
+export const AUTHENTICATE_SUCCEEDED = "AUTHENTICATE_SUCCEEDED";
+export const AUTHENTICATE_FAILED = "AUTHENTICATE_FAILED";
+export const LOGIN = "LOGIN";
+export const LOGGING = "LOGGING";
+export const LOGIN_SUCCEEDED = "LOGIN_SUCCEEDED";
+export const LOGIN_FAILED = "LOGIN_FAILED";
+export const LOGOUT = "LOGOUT";
+export const CLEAR_TOKEN = "CLEAR_TOKEN";
+export const CLEAR_TOKEN_SUCCEEDED = "CLEAR_TOKEN_SUCCEEDED";
+export const CLEAR_TOKEN_FAILED = "CLEAR_TOKEN_FAILED";
+
+export const authenticateUser = () => ({type: AUTHENTICATE_USER});
+export const authenticating = () => ({type: AUTHENTICATING});
+export const authenticateSucceeded = (user) => ({type: AUTHENTICATE_SUCCEEDED, user});
+export const authenticateFailed = (message) => ({type: AUTHENTICATE_FAILED, message});
+export const login = (username, password, remember) => ({
+  type: LOGIN,
+  username,
+  password,
+  remember
+});
+export const logging = () => ({type: LOGGING});
+export const loginSucceeded = (token, item) => ({
+  type: LOGIN_SUCCEEDED,
+  token,
+  item,
+});
+export const loginFailed = (message) => ({type: LOGIN_FAILED, message});
+export const logout = () => ({type: LOGOUT});
+export const clearToken = () => ({type: CLEAR_TOKEN});
+export const clearTokenSucceeded = () => ({type: CLEAR_TOKEN_SUCCEEDED});
+export const clearTokenFailed = (message) => ({type: CLEAR_TOKEN_FAILED, message});

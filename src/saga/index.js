@@ -1,16 +1,8 @@
 import * as actions from "../actions";
 
-import {
-  getBook,
-  getAuthor,
-  getCategory,
-  getBookDetail,
-  getAuthorDetail,
-  getFamousAuthor,
-  findBookByKeyword,
-} from "../api";
+import * as api from "../api";
 
-import {all, call, fork, put, takeLatest} from "redux-saga/effects";
+import {all, call, fork, put, take, takeLatest} from "redux-saga/effects";
 
 export const delay = (ms) => new Promise((res) => setTimeout(res, ms));
 
@@ -37,17 +29,17 @@ function* findByOptions(action) {
   yield put(actions.waitingForUserDone());
   yield delay(1000);
   yield put(actions.bookGetting());
-  return yield call(getBook, action.authorID, action.categoryID);
+  return yield call(api.getBook, action.authorID, action.categoryID);
 }
 
 function* findByKeyword(action) {
   yield put(actions.bookGetting());
-  return yield call(findBookByKeyword, action.keyword);
+  return yield call(api.findBookByKeyword, action.keyword);
 }
 
 function* loadBook() {
   yield put(actions.bookGetting());
-  return yield call(getBook);
+  return yield call(api.getBook);
 }
 
 function* watchFetchBook() {
@@ -65,7 +57,7 @@ function* watchFetchBook() {
 function* fetchCategory() {
   yield put(actions.categoriesGetting());
   try {
-    const categories = yield call(getCategory);
+    const categories = yield call(api.getCategory);
     yield put(actions.getCategorySucceeded(categories));
   } catch (e) {
     yield put(actions.getCategoryFailed(e));
@@ -74,13 +66,13 @@ function* fetchCategory() {
 
 function* fetchAuthor() {
   yield put(actions.authorGetting());
-  return yield call(getAuthor);
+  return yield call(api.getAuthor);
 }
 
 function* fetchAuthorDetail(action) {
   yield put(actions.authorGetting());
   try {
-    const author = yield call(getAuthorDetail, action.alias);
+    const author = yield call(api.getAuthorDetail, action.alias);
     yield put(actions.getAuthorSucceeded(author));
   } catch (e) {
     yield put(actions.getAuthorFailed(e));
@@ -90,7 +82,7 @@ function* fetchAuthorDetail(action) {
 function* fetchBookDetail(action) {
   yield put(actions.bookGetting());
   try {
-    const book = yield call(getBookDetail, action.alias);
+    const book = yield call(api.getBookDetail, action.alias);
     yield put(actions.getBookSucceeded(book));
   } catch (e) {
     yield put(actions.getBookFailed(e));
@@ -105,7 +97,7 @@ function* watchFetchDetailInfo() {
 function* fetchFamousAuthor() {
   yield put(actions.authorGetting());
   try {
-    const author = yield call(getFamousAuthor);
+    const author = yield call(api.getFamousAuthor);
     yield put(actions.getAuthorSucceeded(author));
   } catch (e) {
     yield put(actions.getAuthorFailed(e));
@@ -117,10 +109,72 @@ function* watchFetchMenuData() {
   yield takeLatest(actions.GET_FAMOUS_AUTHOR, fetchFamousAuthor);
 }
 
+function* authenticateUser() {
+  try {
+    yield put(actions.authenticating());
+    const user = yield call(api.authentication);
+    if (user) yield put(actions.authenticateSucceeded(user));
+    return user;
+  } catch (e) {
+    yield put(actions.authenticateFailed(e));
+  }
+}
+
+function* login(username, password) {
+  try {
+    yield put(actions.logging());
+    const {token, item} = yield call(api.login, username, password);
+    yield put(actions.loginSucceeded(token, item));
+    return {token, item};
+  } catch (e) {
+    yield put(actions.loginFailed(e));
+  }
+}
+
+function* clearToken() {
+  try {
+    yield put(actions.logout());
+    const {success} = yield call(actions.clearToken);
+    if (success)
+      yield put(
+        actions.clearTokenSucceeded({message: "Ready for you sign in"})
+      );
+  } catch (e) {
+    yield put(
+      actions.clearTokenFailed({
+        message:
+          "An errors was occurs when we trying to clear token. Please check your Internet connection!",
+      })
+    );
+  }
+}
+
+function* authentication() {
+  try {
+    while (true) {
+      yield take(actions.AUTHENTICATE_USER);
+      const user = yield call(authenticateUser);
+      if (!user) {
+        const {username, password, remember} = yield take(actions.LOGIN);
+        const {token} = yield call(login, username, password);
+        if (token) yield call(api.saveToken, token, remember);
+      }
+      yield take([actions.LOGOUT, actions.CLEAR_TOKEN]);
+      yield yield call(clearToken);
+    }
+  } catch (e) {
+    console.trace(e);
+  } finally {
+    if (!localStorage.getItem("remember"))
+      api.clearToken({clearOnServer: true});
+  }
+}
+
 export default function* rootSaga() {
   yield all([
     fork(watchFetchBook),
     fork(watchFetchMenuData),
     fork(watchFetchDetailInfo),
+    fork(authentication),
   ]);
 }
