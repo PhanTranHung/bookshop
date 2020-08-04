@@ -16,6 +16,7 @@ export const delay = (ms) => new Promise((res) => setTimeout(res, ms));
 
 function* fetchBook(action) {
   let result = {};
+
   try {
     if (action.type === actions.GET_BOOK)
       result.book = yield call(loadBook, action);
@@ -34,7 +35,7 @@ function* fetchBook(action) {
 
 function* findByOptions(action) {
   yield put(actions.waitingForUserDone());
-  yield delay(1500);
+  yield delay(1000);
   yield put(actions.bookGetting());
   return yield call(getBook, action.authorID, action.categoryID);
 }

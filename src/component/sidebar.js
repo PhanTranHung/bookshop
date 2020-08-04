@@ -1,6 +1,5 @@
 import React, {useEffect, useState, useRef} from "react";
 import {Menu, Input} from "antd";
-import "antd/dist/antd.css";
 import CheckboxGroup from "./data-entry/checkbox-group";
 import {
   AppstoreOutlined,
@@ -17,8 +16,7 @@ import {
   findBookByKeyword,
 } from "../actions";
 import {useMounted} from "../helper/useMounted";
-
-const {SubMenu} = Menu;
+import {useHistory, useLocation} from "react-router-dom";
 
 const SideBar = () => {
   const {categories, authors} = useSelector((state) => ({
@@ -26,6 +24,8 @@ const SideBar = () => {
     authors: state.fetchAuthor.author,
   }));
 
+  const history = useHistory();
+  const location = useLocation();
   const dispatch = useDispatch();
   useEffect(() => {
     if (categories.length <= 0) dispatch(getCategory());
@@ -36,8 +36,16 @@ const SideBar = () => {
   const [category, setCategory] = useState([]);
   const [author, setAuthor] = useState([]);
   const [selectedKey, setSelectedKey] = useState("all");
-  const menuItem = useRef();
 
+  useEffect(() => {
+    if (location.state && location.state.category) {
+      history.replace(location.pathname);
+      setCategory([location.state.category]);
+    }
+    // eslint-disable-next-line
+  }, [location.state]);
+
+  const menuItem = useRef();
   const isMounted = useMounted();
   useEffect(() => {
     if (isMounted)
@@ -45,16 +53,24 @@ const SideBar = () => {
         setSelectedKey(undefined);
         dispatch(findBookByOptions(author, category));
       } else if (!selectedKey) menuItem.current.props.onClick();
-    console.log(
-      "CATEGORIES",
-      category,
-      "\nAUTHORS",
-      author,
-      "\nKEY",
-      selectedKey
-    );
+    // console.log(
+    //   "CATEGORIES",
+    //   category,
+    //   "\nAUTHORS",
+    //   author,
+    //   "\nKEY",
+    //   selectedKey
+    // );
     // eslint-disable-next-line
   }, [category, author]);
+
+  useEffect(() => {
+    console.log("redirect");
+    if (isMounted && location.pathname !== "/") {
+      history.push("/", {waitData: true})
+    }
+    // eslint-disable-next-line
+  }, [category, author, selectedKey]);
 
   const removeAllCheckBoxAndDispatch = (key, keyword) => {
     if (author.length > 0) setAuthor([]);
@@ -70,7 +86,7 @@ const SideBar = () => {
       }
     }
     if (key === "search") return dispatch(findBookByKeyword(keyword));
-    console.log("Clicked");
+    // console.log("Clicked");
   };
 
   return (
@@ -89,7 +105,7 @@ const SideBar = () => {
         >
           Tất cả sách
         </Menu.Item>
-        <SubMenu key="category" icon={<MailOutlined/>} title="Thể loại">
+        <Menu.SubMenu key="category" icon={<MailOutlined/>} title="Thể loại">
           <CheckboxGroup
             options={categories}
             onChange={(values) => setCategory(values)}
@@ -97,8 +113,8 @@ const SideBar = () => {
             itemLayout="horizontal"
             value={category}
           />
-        </SubMenu>
-        <SubMenu
+        </Menu.SubMenu>
+        <Menu.SubMenu
           key="author"
           icon={<AppstoreOutlined/>}
           title="Một số tác giả nổi tiếng"
@@ -116,7 +132,7 @@ const SideBar = () => {
           >
             Xem thêm tác giả
           </Menu.Item>
-        </SubMenu>
+        </Menu.SubMenu>
         <Menu.Item
           key="search"
           className="sticky_bottom"

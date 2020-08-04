@@ -41,9 +41,10 @@ export const getBook = (authorID = [], categoryID = []) => {
           categoriesID: categoryID.length > 0 ? categoryID : undefined,
         },
       },
-    })
-      .then((res) => resolve(res.data.data.book))
-      .catch((error) => reject(error));
+    }).then((res) => {
+      if (res.data.errors) return reject(res.data.errors);
+      resolve(res.data.data.book);
+    });
   });
 };
 
@@ -84,9 +85,10 @@ export const findBookByKeyword = (keyword) => {
                 }`,
         variables: {keyword},
       },
-    })
-      .then((res) => resolve(res.data.data))
-      .catch((error) => reject(error));
+    }).then((res) => {
+      if (res.data.errors) return reject(res.data.errors);
+      resolve(res.data.data);
+    });
   });
 };
 
@@ -106,9 +108,10 @@ export const getCategory = (prams) => {
                 }`,
         variables: {},
       },
-    })
-      .then((res) => resolve(res.data.data.categories))
-      .catch((error) => reject(error));
+    }).then((res) => {
+      if (res.data.errors) return reject(res.data.errors);
+      resolve(res.data.data.categories);
+    });
   });
 };
 
@@ -131,9 +134,10 @@ export const getAuthor = (prams) => {
                 }`,
         variables: {},
       },
-    })
-      .then((res) => resolve(res.data.data.author))
-      .catch((error) => reject(error));
+    }).then((res) => {
+      if (res.data.errors) return reject(res.data.errors);
+      resolve(res.data.data.author);
+    });
   });
 };
 export const getFamousAuthor = getAuthor;
@@ -156,12 +160,13 @@ export const getAuthorDetail = (alias) => {
                   }
                 }`,
         variables: {
-          "alias": alias
+          alias: alias,
         },
       },
-    })
-      .then((res) => resolve(res.data.data.author))
-      .catch((error) => reject(error));
+    }).then((res) => {
+      if (res.data.errors) return reject(res.data.errors);
+      resolve(res.data.data.author);
+    });
   });
 };
 
@@ -194,11 +199,13 @@ export const getBookDetail = (alias) => {
                   }
                 }`,
         variables: {
-          "alias": alias
+          alias: alias,
         },
       },
-    })
-      .then((res) => resolve(res.data.data))
-      .catch((error) => reject(error));
+    }).then((res) => {
+      // console.log(res);
+      if (res.data.errors) return reject(res.data.errors);
+      return resolve(res.data.data);
+    });
   });
 };

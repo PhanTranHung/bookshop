@@ -25,13 +25,12 @@ export const failedAction = (prevState, action) => ({
   error: true,
   isLoading: false,
   message: action.message,
-  constructing: undefined,
 });
 
 export const fetchBook = (state = initBook, action) => {
   switch (action.type) {
-    // case CLEAR_DATA:
-    //   return initBook;
+    case CLEAR_DATA:
+      return action.initData;
     case BOOK_GETTING:
       return gettingAction(state, action);
     case WAITING_FOR_USER_DONE:
@@ -43,7 +42,6 @@ export const fetchBook = (state = initBook, action) => {
         author: action.author || [],
         isLoading: false,
         error: false,
-        constructing: undefined,
       };
 
     case GET_BOOK_FAILED:
@@ -102,6 +100,6 @@ export const reducer = combineReducers({
 });
 
 export default (state = initState, action) => {
-  if (action.type === CLEAR_DATA) state = initState;
+  // if (action.type === CLEAR_DATA) state = initState;
   return reducer(state, action);
 };

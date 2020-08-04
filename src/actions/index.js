@@ -8,10 +8,7 @@ export const GET_BOOK_SUCCEEDED = "GET_BOOK_SUCCEEDED";
 export const GET_BOOK_FAILED = "GET_BOOK_FAILED";
 
 export const initBook = {
-  constructing: true,
   isLoading: true,
-  book: [],
-  author: [],
 };
 
 export const getBook = () => ({type: GET_BOOK});
@@ -81,4 +78,4 @@ export const getAuthorDetail = (alias) => ({
 });
 
 export const CLEAR_DATA = "CLEAR_DATA";
-export const clearData = () => ({type: CLEAR_DATA});
+export const clearData = (initData) => ({type: CLEAR_DATA, initData});
